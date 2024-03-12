@@ -1,5 +1,7 @@
 package config
 
+import "fmt"
+
 type DatabaseConfig struct {
 	Host     string
 	Port     int
@@ -9,13 +11,20 @@ type DatabaseConfig struct {
 	SSLMode  string
 }
 
-func NewDatabaseConfig() *DatabaseConfig {
+func newDatabaseConfig() *DatabaseConfig {
 	return &DatabaseConfig{
 		Host:     "localhost",
 		Port:     5432,
-		User:     "user",
+		User:     "postgres",
 		Password: "password",
-		DBName:   "dbname",
+		DBName:   "flashcards",
 		SSLMode:  "disable",
 	}
+}
+
+func GetDSN() string {
+	c := newDatabaseConfig()
+
+	return fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
+		c.Host, c.Port, c.User, c.Password, c.DBName, c.SSLMode)
 }

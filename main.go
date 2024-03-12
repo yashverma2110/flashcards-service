@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flashcards/domain"
 	"flashcards/wire"
 	"net/http"
 
@@ -16,14 +17,25 @@ func main() {
 	if err != nil {
 		engine.Logger.Log.DPanic("Error initializing database: ", zap.Error(err))
 	}
-
-	defer db.Close()
-
+	// Running db migrations 
+	db.AutoMigrate(
+		&domain.User{},
+		&domain.Topic{},
+		&domain.Collection{},
+		&domain.Deck{},
+		&domain.Card{},
+		&domain.Like{},
+	)
+	
+	wire.InitializeUserService(db, engine.Logger)
+	
+	// health check route
 	engine.Engine.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "Server is running",
 		})
 	})
-
+	
 	engine.Engine.Run(":8080")
+	
 }

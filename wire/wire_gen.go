@@ -7,12 +7,12 @@
 package wire
 
 import (
-	"database/sql"
-	"flashcards/config"
 	"flashcards/database"
 	"flashcards/logger"
 	"flashcards/resources"
 	"flashcards/server"
+	"flashcards/services"
+	"gorm.io/gorm"
 )
 
 // Injectors from wire.go:
@@ -27,11 +27,15 @@ func InitializeServer() (*server.Server, error) {
 	return serverServer, nil
 }
 
-func InitializeDatabase() (*sql.DB, error) {
-	databaseConfig := config.NewDatabaseConfig()
-	db, err := database.NewDatabase(databaseConfig)
+func InitializeDatabase() (*gorm.DB, error) {
+	db, err := database.NewDatabase()
 	if err != nil {
 		return nil, err
 	}
 	return db, nil
+}
+
+func InitializeUserService(db *gorm.DB, logger2 *logger.Logger) services.UserService {
+	userService := services.NewUserService(logger2, db)
+	return userService
 }

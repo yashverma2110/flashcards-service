@@ -4,14 +4,14 @@
 package wire
 
 import (
-	"database/sql"
-	"flashcards/config"
 	"flashcards/database"
 	"flashcards/logger"
 	"flashcards/resources"
 	"flashcards/server"
+	"flashcards/services"
 
 	"github.com/google/wire"
+	"gorm.io/gorm"
 )
 
 func InitializeServer() (*server.Server, error) {
@@ -20,10 +20,15 @@ func InitializeServer() (*server.Server, error) {
 		resources.NewGinEngine,
 		logger.NewLogger,
 	)
-	return nil, nil // This return value will be filled by Wire
+	return nil, nil
 }
 
-func InitializeDatabase() (*sql.DB, error) {
-	wire.Build(database.NewDatabase, config.NewDatabaseConfig)
+func InitializeDatabase() (*gorm.DB, error) {
+	wire.Build(database.NewDatabase)
 	return nil, nil
+}
+
+func InitializeUserService(db *gorm.DB, logger *logger.Logger) services.UserService {
+	wire.Build(services.NewUserService)
+	return nil // The return value is just a placeholder
 }
